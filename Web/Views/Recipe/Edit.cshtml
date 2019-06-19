@@ -1,0 +1,12 @@
+﻿@model ManageRecipeViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">@(Model.Recipe.Id == null ? "Add recipe" : "Update recipe")</h1>
+    <form asp-controller="Recipe" asp-action="@(Model.Recipe.Id == null ? "Store" : "Update")" method="post" asp-route-recipeId="@Model.Recipe.Id">
+        <input type="text" name="Name" value="@Model.Recipe.Name">
+        <button class="btn btn-success" type="submit">Submit</button>
+    </form>
+</div>

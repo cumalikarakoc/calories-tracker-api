@@ -1,0 +1,30 @@
+﻿@model RecipeViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div>
+    <h1 class="display-4">Recipes</h1>
+    <a class="btn btn-success" asp-controller="Recipe" asp-action="Create">New recipe</a>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var recipe in Model.Recipes)
+        {
+            <tr>
+                <td>@recipe.Id</td>
+                <td>@recipe.Name</td>
+                <td class="justify-content-end">
+                    <a class="btn btn-primary" asp-controller="Recipe" asp-action="Edit" asp-route-recipeId="@recipe.Id" role="button">Edit</a> <a class="btn btn-danger" asp-controller="Recipe" asp-action="Delete" asp-route-recipeId="@recipe.Id">Remove</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
