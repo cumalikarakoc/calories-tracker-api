@@ -1,4 +1,11 @@
-﻿using DataContext.Data;
+﻿using Core.Schema;
+using Core.Schema.Data;
+using Core.Services;
+using DataContext.Data;
+using GraphQL;
+using GraphQL.Server;
+using GraphQL.Server.Ui.GraphiQL;
+using GraphQL.Server.Ui.Playground;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -20,9 +27,35 @@ namespace Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<CaloriesContext>(options =>
-            {
-                options.UseMySQL(Configuration.GetConnectionString("DefaultConnection"));
-            });
+                options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
+            
+            services.AddTransient<IDependencyResolver>(
+                c => new FuncDependencyResolver(type => c.GetRequiredService(type)));
+
+            
+            //Services
+            services.AddTransient<RecipeService>();
+            
+            //Types
+            services.AddTransient<RecipeType>();
+            
+            //Input types
+            services.AddTransient<RecipeCreateInputType>();
+            
+            // Schema setup
+            services.AddTransient<SchemaQuery>();
+            services.AddTransient<SchemaMutation>();
+
+            services.AddTransient<CaloriesTrackerSchema>();
+
+
+            services.AddGraphQL(options =>
+                {
+                    options.EnableMetrics = true;
+                    options.ExposeExceptions = true;
+                })
+                .AddWebSockets()
+                .AddDataLoader();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -32,10 +65,19 @@ namespace Web
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
+
+            app.UseWebSockets();
+            app.UseGraphQLWebSockets<CaloriesTrackerSchema>();
+            app.UseGraphQL<CaloriesTrackerSchema>();
+            app.UseGraphQLPlayground(new GraphQLPlaygroundOptions
             {
-                app.UseExceptionHandler("/Home/Error");
-            }
+                Path = "/ui/playground"
+            });
+            app.UseGraphiQLServer(new GraphiQLOptions
+            {
+                GraphiQLPath = "/ui/graphiql",
+                GraphQLEndPoint = "/graphql"
+            });
         }
     }
 }
