@@ -8,18 +8,25 @@ namespace DataContext.Data
         public CaloriesContext(DbContextOptions options) : base(options)
         {
         }
-
+        
+        public DbSet<Meal> Meals { get; set; }
         public DbSet<Recipe> Recipes { get; set; }
 
         public DbSet<Ingredient> Ingredients { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Meal>()
+                .HasKey(m => m.Id);
+            
             modelBuilder.Entity<Recipe>()
                 .HasKey(r => r.Id);
 
             modelBuilder.Entity<Ingredient>()
                 .HasKey(i => i.Id);
+
+            modelBuilder.Entity<IngredientRecipe>()
+                .HasKey(i => new {i.IngredientId, i.RecipeId});
         }
     }
 }
