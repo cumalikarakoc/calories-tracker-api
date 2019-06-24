@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Core.Services;
 using DataContext.Models;
 using GraphQL.Types;

@@ -9,6 +9,7 @@ namespace Core.Schema
         {
             Field(r => r.Id);
             Field(r => r.Name);
+            Field<MealType>("meal", resolve: context => context.Source.Meal);
         }
     }
 }

@@ -30,5 +30,15 @@ namespace Core.Services
                 .Single(m => m.Id == mealId).Recipes
                 .ToList();
         }
+
+        public Task<Recipe> AddRecipeToMealAsync(int recipeId, int mealId)
+        {
+            Recipe recipe = _context.Recipes.Single(r => r.Id == recipeId);
+            Meal meal = _context.Meals.Single(r => r.Id == mealId);
+            recipe.Meal = meal;
+            _context.Recipes.Update(recipe);
+            _context.SaveChanges();
+            return _context.Recipes.SingleAsync(r => r.Id == recipeId);
+        }
     }
 }

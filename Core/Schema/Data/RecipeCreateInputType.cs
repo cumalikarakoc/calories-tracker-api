@@ -7,8 +7,9 @@ namespace Core.Schema.Data
     {
         public RecipeCreateInputType()
         {
-            Name = "ExerciseInput";
+            Name = "RecipeInput";
             Field<NonNullGraphType<StringGraphType>>("name");
+            Field<NonNullGraphType<IntGraphType>>("mealId");
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Core.Schema
 {
     public class SchemaMutation : ObjectGraphType<object>
     {
-        public SchemaMutation(RecipeService recipeService)
+        public SchemaMutation(RecipeService recipeService, MealService mealService)
         {
             Name = "Mutation";
             Field<RecipeType>(
@@ -17,8 +17,18 @@ namespace Core.Schema
                 resolve: context =>
                 {
                     var input = context.GetArgument<RecipeCreateInputType>("recipe");
-                    var order = new Recipe {Name = input.Name};
-                    return recipeService.CreateAsync(order);
+                    var recipe = new Recipe {Name = input.Name};
+                    return recipeService.CreateAsync(recipe);
+                }
+            );
+
+            Field<RecipeType>("addRecipeToMeal", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "recipeId"},
+                    new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "mealId"}),
+                resolve: context =>
+                {
+                    return mealService.AddRecipeToMealAsync(context.GetArgument<int>(Name = "recipeId"),
+                        context.GetArgument<int>(Name = "mealId"));
                 }
             );
         }

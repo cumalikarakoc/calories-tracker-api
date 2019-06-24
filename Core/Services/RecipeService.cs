@@ -18,6 +18,7 @@ namespace Core.Services
         public Task<List<Recipe>> GetRecipesAsync()
         {
             return _context.Recipes
+                .Include(r => r.Meal)
                 .ToListAsync();
         }
         
