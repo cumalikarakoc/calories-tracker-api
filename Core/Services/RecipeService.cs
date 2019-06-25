@@ -27,7 +27,9 @@ namespace Core.Services
             _context.Recipes.Add(recipe);
             _context.SaveChangesAsync();
 
-            return Task.FromResult(recipe);
+            return _context.Recipes
+                .Include(m => m.Meal)
+                .SingleAsync(m => m.Id == recipe.Id);
         }
     }
 }

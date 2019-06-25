@@ -16,8 +16,7 @@ namespace Core.Schema
                     new QueryArgument<NonNullGraphType<RecipeCreateInputType>> {Name = "recipe"}),
                 resolve: context =>
                 {
-                    var input = context.GetArgument<RecipeCreateInputType>("recipe");
-                    var recipe = new Recipe {Name = input.Name};
+                    var recipe = context.GetArgument<Recipe>("recipe");
                     return recipeService.CreateAsync(recipe);
                 }
             );
