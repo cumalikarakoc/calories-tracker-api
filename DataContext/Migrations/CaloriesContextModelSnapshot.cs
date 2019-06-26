@@ -20,6 +20,8 @@ namespace DataContext.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("Calories");
+
                     b.Property<string>("Name");
 
                     b.HasKey("Id");
@@ -83,7 +85,7 @@ namespace DataContext.Migrations
 
             modelBuilder.Entity("DataContext.Models.Recipe", b =>
                 {
-                    b.HasOne("DataContext.Models.Meal")
+                    b.HasOne("DataContext.Models.Meal", "Meal")
                         .WithMany("Recipes")
                         .HasForeignKey("MealId")
                         .OnDelete(DeleteBehavior.Cascade);

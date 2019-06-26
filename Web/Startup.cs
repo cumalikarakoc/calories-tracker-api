@@ -1,4 +1,5 @@
-﻿using Core.Schema;
+﻿using System;
+using Core.Schema;
 using Core.Schema.Data;
 using Core.Services;
 using DataContext.Data;
@@ -40,12 +41,13 @@ namespace Web
             //Types
             services.AddTransient<RecipeType>();
             services.AddTransient<MealType>();
+            services.AddTransient<IngredientType>();
             
             //Input types
             services.AddTransient<RecipeCreateInputType>();
             
             // Schema setup
-            services.AddTransient<SchemaQuery>();
+            services.AddTransient<SchemaQuery>(); 
             services.AddTransient<SchemaMutation>();
 
             services.AddTransient<CaloriesTrackerSchema>();

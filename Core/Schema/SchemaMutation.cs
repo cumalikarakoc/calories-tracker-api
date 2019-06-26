@@ -30,6 +30,16 @@ namespace Core.Schema
                         context.GetArgument<int>(Name = "mealId"));
                 }
             );
+
+            Field<RecipeType>("addIngredientToRecipe", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "ingredientId"},
+                    new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "recipeId"}),
+                resolve: context =>
+                {
+                    return recipeService.AddIngredientAsync(context.GetArgument<int>(Name = "recipeId"),
+                        context.GetArgument<int>(Name = "ingredientId"));
+                }
+            );
         }
     }
 }

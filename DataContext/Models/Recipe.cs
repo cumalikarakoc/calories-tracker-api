@@ -8,6 +8,7 @@ namespace DataContext.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public List<IngredientRecipe> Ingredients { get; set; }
+
         
         [NotMapped]
         public int MealId { get; set; }

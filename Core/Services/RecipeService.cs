@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DataContext.Data;
 using DataContext.Models;
@@ -19,9 +20,11 @@ namespace Core.Services
         {
             return _context.Recipes
                 .Include(r => r.Meal)
+                .Include(r => r.Ingredients)
+                .ThenInclude(x => x.Ingredient)
                 .ToListAsync();
         }
-        
+
         public Task<Recipe> CreateAsync(Recipe recipe)
         {
             _context.Recipes.Add(recipe);
@@ -30,6 +33,21 @@ namespace Core.Services
             return _context.Recipes
                 .Include(m => m.Meal)
                 .SingleAsync(m => m.Id == recipe.Id);
+        }
+
+        public Task<Recipe> AddIngredientAsync(int recipeId, int ingredientId)
+        {
+            var recipe = _context.Recipes
+                .Include(r => r.Ingredients)
+                .ThenInclude(x => x.Ingredient)
+                .Single(r => r.Id == recipeId);
+            recipe.Ingredients.Add(new IngredientRecipe
+            {
+                IngredientId = ingredientId, RecipeId = recipeId
+            });
+            _context.SaveChanges();
+
+            return Task.FromResult(recipe);
         }
     }
 }
