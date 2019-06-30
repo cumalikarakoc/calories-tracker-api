@@ -9,7 +9,6 @@ namespace Core.Schema.Data
         {
             Name = "RecipeInput";
             Field<NonNullGraphType<StringGraphType>>("name");
-            Field<NonNullGraphType<IntGraphType>>("mealId");
         }
     }
 }

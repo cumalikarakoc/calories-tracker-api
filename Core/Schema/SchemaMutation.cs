@@ -21,6 +21,16 @@ namespace Core.Schema
                 }
             );
 
+            Field<RecipeType>("updateRecipe", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "recipeId"},
+                    new QueryArgument<NonNullGraphType<RecipeCreateInputType>> {Name = "recipe"}),
+                resolve: context =>
+                {
+                    return recipeService.UpdateAsync(context.GetArgument<int>(Name = "recipeId"),
+                        context.GetArgument<Recipe>("recipe"));
+                }
+            );
+
             Field<RecipeType>("addRecipeToMeal", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "recipeId"},
                     new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "mealId"}),

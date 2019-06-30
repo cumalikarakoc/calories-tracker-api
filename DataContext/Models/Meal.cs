@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace DataContext.Models
 {
@@ -7,6 +6,6 @@ namespace DataContext.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public List<Recipe> Recipes { get; set; }
+        public List<MealRecipe> Recipes { get; set; }
     }
 }

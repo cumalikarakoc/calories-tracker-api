@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DataContext.Data;
 using DataContext.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Core.Services
 {
@@ -18,10 +19,7 @@ namespace Core.Services
 
         public Task<List<Recipe>> GetRecipesAsync()
         {
-            return _context.Recipes
-                .Include(r => r.Meal)
-                .Include(r => r.Ingredients)
-                .ThenInclude(x => x.Ingredient)
+            return GetRecipeDecoratedWithRelations()
                 .ToListAsync();
         }
 
@@ -30,16 +28,13 @@ namespace Core.Services
             _context.Recipes.Add(recipe);
             _context.SaveChangesAsync();
 
-            return _context.Recipes
-                .Include(m => m.Meal)
-                .SingleAsync(m => m.Id == recipe.Id);
+            return GetRecipeDecoratedWithRelations()
+                .SingleAsync(r => r.Id == recipe.Id);
         }
 
         public Task<Recipe> AddIngredientAsync(int recipeId, int ingredientId)
         {
-            var recipe = _context.Recipes
-                .Include(r => r.Ingredients)
-                .ThenInclude(x => x.Ingredient)
+            var recipe = GetRecipeDecoratedWithRelations()
                 .Single(r => r.Id == recipeId);
             recipe.Ingredients.Add(new IngredientRecipe
             {
@@ -48,6 +43,24 @@ namespace Core.Services
             _context.SaveChanges();
 
             return Task.FromResult(recipe);
+        }
+
+        public Task<Recipe> UpdateAsync(int recipeId, Recipe recipe)
+        {
+            var recipeToUpdate = GetRecipeDecoratedWithRelations()
+                .Single(r => r.Id == recipeId);
+
+            recipeToUpdate.Name = recipe.Name;
+            _context.SaveChanges();
+            
+            return Task.FromResult(recipeToUpdate);
+        }
+
+        private IIncludableQueryable<Recipe, Ingredient> GetRecipeDecoratedWithRelations()
+        {
+            return _context.Recipes
+                .Include(r => r.Ingredients)
+                .ThenInclude(x => x.Ingredient);
         }
     }
 }

@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataContext.Data;
 using DataContext.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Core.Services
 {
@@ -16,29 +18,31 @@ namespace Core.Services
             _context = context;
         }
 
-        public Task<List<Meal>> GetMealsAsync()
+        public Task<Meal> GetRecipesForMealIdAsync(int mealId)
         {
-            return _context.Meals
-                .Include(x => x.Recipes)
-                .ToListAsync();
+            return GetMealDecoratedWithRelations()
+                .SingleAsync(m => m.Id == mealId);
         }
 
-        public IEnumerable<Recipe> GetRecipesForMealIdAsync(int mealId)
+        public Task<Meal> AddRecipeToMealAsync(int recipeId, int mealId)
         {
-            return _context.Meals
-                .Include(x => x.Recipes)
-                .Single(m => m.Id == mealId).Recipes
-                .ToList();
-        }
-
-        public Task<Recipe> AddRecipeToMealAsync(int recipeId, int mealId)
-        {
-            Recipe recipe = _context.Recipes.Single(r => r.Id == recipeId);
-            Meal meal = _context.Meals.Single(r => r.Id == mealId);
-            recipe.Meal = meal;
-            _context.Recipes.Update(recipe);
+            var meal = _context.Meals.Single(r => r.Id == mealId);
+            meal.Recipes.Add(new MealRecipe
+            {
+                RecipeId = recipeId,
+                CreatedAt = DateTime.Now
+            });
             _context.SaveChanges();
-            return _context.Recipes.SingleAsync(r => r.Id == recipeId);
+
+            return GetMealDecoratedWithRelations()
+                .SingleAsync(m => m.Id == meal.Id);
+        }
+
+        private IIncludableQueryable<Meal, Recipe> GetMealDecoratedWithRelations()
+        {
+            return _context.Meals
+                .Include(m => m.Recipes)
+                .ThenInclude(x => x.Recipe);
         }
     }
 }
