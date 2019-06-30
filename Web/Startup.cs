@@ -37,6 +37,7 @@ namespace Web
             //Services
             services.AddTransient<RecipeService>();
             services.AddTransient<MealService>();
+            services.AddTransient<IngredientService>();
             
             //Types
             services.AddTransient<RecipeType>();
@@ -46,6 +47,7 @@ namespace Web
             
             //Input types
             services.AddTransient<RecipeCreateInputType>();
+            services.AddTransient<IngredientCreateInputType>();
             
             // Schema setup
             services.AddTransient<SchemaQuery>(); 

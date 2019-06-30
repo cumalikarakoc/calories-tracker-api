@@ -42,7 +42,8 @@ namespace Core.Services
             });
             _context.SaveChanges();
 
-            return Task.FromResult(recipe);
+            return GetRecipeDecoratedWithRelations()
+                .SingleAsync(r => r.Id == recipe.Id);
         }
 
         public Task<Recipe> UpdateAsync(int recipeId, Recipe recipe)
