@@ -1,3 +1,4 @@
+using System;
 using Core.Schema.Data;
 using Core.Services;
 using DataContext.Models;
@@ -31,13 +32,24 @@ namespace Core.Schema
                 }
             );
 
-            Field<RecipeType>("addRecipeToMeal", arguments: new QueryArguments(
+            Field<MealType>("addRecipeToMeal", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "recipeId"},
                     new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "mealId"}),
                 resolve: context =>
                 {
                     return mealService.AddRecipeToMealAsync(context.GetArgument<int>(Name = "recipeId"),
                         context.GetArgument<int>(Name = "mealId"));
+                }
+            );
+
+            Field<MealType>("removeRecipeFromMeal", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "recipeId"},
+                    new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "mealId"},
+                    new QueryArgument<NonNullGraphType<DateTimeGraphType>> {Name = "createdAt"}),
+                resolve: context =>
+                {
+                    return mealService.RemoveRecipeFromMealAsync(context.GetArgument<int>(Name = "recipeId"),
+                        context.GetArgument<int>(Name = "mealId"), context.GetArgument<DateTime>(Name = "createdAt"));
                 }
             );
 

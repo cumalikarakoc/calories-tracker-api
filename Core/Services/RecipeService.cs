@@ -52,7 +52,7 @@ namespace Core.Services
 
             recipeToUpdate.Name = recipe.Name;
             _context.SaveChanges();
-            
+
             return Task.FromResult(recipeToUpdate);
         }
 

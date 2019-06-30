@@ -18,6 +18,12 @@ namespace Core.Services
             _context = context;
         }
 
+        public Task<List<Meal>> GetMealsAsync()
+        {
+            return _context.Meals
+                .ToListAsync();
+        }
+        
         public Task<Meal> GetRecipesForMealIdAsync(int mealId)
         {
             return GetMealDecoratedWithRelations()
@@ -26,16 +32,15 @@ namespace Core.Services
 
         public Task<Meal> AddRecipeToMealAsync(int recipeId, int mealId)
         {
-            var meal = _context.Meals.Single(r => r.Id == mealId);
+            var meal = GetMealDecoratedWithRelations()
+                .Single(m => m.Id == mealId);
             meal.Recipes.Add(new MealRecipe
             {
-                RecipeId = recipeId,
-                CreatedAt = DateTime.Now
+                RecipeId = recipeId, CreatedAt = DateTime.Now, MealId = mealId
             });
             _context.SaveChanges();
 
-            return GetMealDecoratedWithRelations()
-                .SingleAsync(m => m.Id == meal.Id);
+            return Task.FromResult(meal);
         }
 
         private IIncludableQueryable<Meal, Recipe> GetMealDecoratedWithRelations()
@@ -43,6 +48,17 @@ namespace Core.Services
             return _context.Meals
                 .Include(m => m.Recipes)
                 .ThenInclude(x => x.Recipe);
+        }
+
+        public Task<Meal> RemoveRecipeFromMealAsync(int recipeId, int mealId, DateTime createdAt)
+        {
+            var meal = GetMealDecoratedWithRelations()
+                .Single(m => m.Id == mealId);
+            var recipe = meal.Recipes.Single(x => x.RecipeId == recipeId && x.CreatedAt == createdAt);
+            meal.Recipes.Remove(recipe);
+            _context.SaveChanges();
+            
+            return Task.FromResult(meal);
         }
     }
 }
