@@ -21,9 +21,17 @@ namespace DataContext.Data
             
             modelBuilder.Entity<Recipe>()
                 .HasKey(r => r.Id);
+            
+            modelBuilder.Entity<Recipe>()
+                .HasAlternateKey(r => r.Name)
+                .HasName("AK_Recipe_Name");
 
             modelBuilder.Entity<Ingredient>()
                 .HasKey(i => i.Id);
+            
+            modelBuilder.Entity<Ingredient>()
+                .HasAlternateKey(i => i.Name)
+                .HasName("AK_Ingredient_Name");
 
             modelBuilder.Entity<IngredientRecipe>()
                 .HasKey(i => new {i.IngredientId, i.RecipeId});

@@ -10,6 +10,11 @@ namespace Core.Schema
             Name = "Query";
             Field<ListGraphType<RecipeType>>("recipes", resolve: context => recipeService.GetRecipesAsync());
 
+            Field<RecipeType>("recipe", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "recipeId"}),
+                resolve: context =>
+                    recipeService.GetRecipeByIdAsync(context.GetArgument<int>(Name = "recipeId")));
+
             Field<ListGraphType<MealType>>("meals", resolve: context => mealService.GetMealsAsync());
 
             Field<MealType>("mealRecipes",

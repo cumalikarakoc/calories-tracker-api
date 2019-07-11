@@ -1,4 +1,4 @@
-using System.Linq;
+using System.Collections.Generic;
 using DataContext.Models;
 using GraphQL.Types;
 
@@ -10,8 +10,9 @@ namespace Core.Schema
         {
             Field(r => r.Id);
             Field(r => r.Name);
-            Field<ListGraphType<IngredientType>>("ingredients",
-                resolve: context => context.Source.Ingredients.Select(x => x.Ingredient));
+            Field<ListGraphType<IngredientRecipeType>, IEnumerable<IngredientRecipe>>()
+                .Name("ingredients")
+                .Resolve(context => context.Source.Ingredients);
         }
     }
 }

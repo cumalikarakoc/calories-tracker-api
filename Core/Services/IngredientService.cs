@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using DataContext.Data;
 using DataContext.Models;
@@ -54,7 +52,7 @@ namespace Core.Services
             var ingredient = _context.Ingredients.Single(i => i.Id == ingredientId);
             _context.Ingredients.Remove(ingredient);
             _context.SaveChanges();
-            
+
             return Task.FromResult(ingredient);
         }
     }

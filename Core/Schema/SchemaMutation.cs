@@ -28,6 +28,10 @@ namespace Core.Schema
                 resolve: context => recipeService.UpdateAsync(context.GetArgument<int>(Name = "recipeId"),
                     context.GetArgument<Recipe>("recipe")));
 
+            Field<RecipeType>("removeRecipe",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "recipeId"}),
+                resolve: context => recipeService.RemoveAsync(context.GetArgument<int>(Name = "recipeId")));
+
             Field<MealType>("addRecipeToMeal", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "recipeId"},
                     new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "mealId"}),
@@ -42,10 +46,21 @@ namespace Core.Schema
                     context.GetArgument<int>(Name = "mealId"), context.GetArgument<DateTime>(Name = "createdAt")));
 
             Field<RecipeType>("addIngredientToRecipe", arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "ingredientId"},
-                    new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "recipeId"}),
-                resolve: context => recipeService.AddIngredientAsync(context.GetArgument<int>(Name = "recipeId"),
-                    context.GetArgument<int>(Name = "ingredientId")));
+                    new QueryArgument<NonNullGraphType<IngredientRecipeInputType>> {Name = "ingredientRecipe"}),
+                resolve: context =>
+                    recipeService.AddIngredientAsync(context.GetArgument<IngredientRecipe>(Name = "ingredientRecipe")));
+
+            Field<RecipeType>("removeIngredientFromRecipe", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "recipeId"},
+                    new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "ingredientId"}),
+                resolve: context =>
+                    recipeService.RemoveIngredientAsync(context.GetArgument<int>(Name = "recipeId"),
+                        context.GetArgument<int>(Name = "ingredientId")));
+            
+            Field<RecipeType>("updateIngredientQuantityOfRecipe", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<IngredientRecipeInputType>> {Name = "ingredientRecipe"}),
+                resolve: context =>
+                    recipeService.UpdateIngredientQuantityAsync(context.GetArgument<IngredientRecipe>(Name = "ingredientRecipe")));
 
             Field<IngredientType>("createIngredient", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<IngredientCreateInputType>> {Name = "ingredient"}),
@@ -58,7 +73,7 @@ namespace Core.Schema
                 resolve: context =>
                     ingredientService.UpdateAsync(context.GetArgument<int>(Name = "ingredientId"),
                         context.GetArgument<Ingredient>(Name = "ingredient")));
-            
+
             Field<IngredientType>("removeIngredient", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "ingredientId"}),
                 resolve: context =>

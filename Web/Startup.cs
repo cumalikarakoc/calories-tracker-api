@@ -44,10 +44,12 @@ namespace Web
             services.AddTransient<MealType>();
             services.AddTransient<MealRecipeType>();
             services.AddTransient<IngredientType>();
+            services.AddTransient<IngredientRecipeType>();
             
             //Input types
             services.AddTransient<RecipeCreateInputType>();
             services.AddTransient<IngredientCreateInputType>();
+            services.AddTransient<IngredientRecipeInputType>();
             
             // Schema setup
             services.AddTransient<SchemaQuery>(); 

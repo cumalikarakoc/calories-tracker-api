@@ -23,24 +23,16 @@ namespace Core.Services
                 .ToListAsync();
         }
 
+        public object GetRecipeByIdAsync(int recipeId)
+        {
+            return GetRecipeDecoratedWithRelations()
+                .SingleAsync(r => r.Id == recipeId);
+        }
+
         public Task<Recipe> CreateAsync(Recipe recipe)
         {
             _context.Recipes.Add(recipe);
             _context.SaveChangesAsync();
-
-            return GetRecipeDecoratedWithRelations()
-                .SingleAsync(r => r.Id == recipe.Id);
-        }
-
-        public Task<Recipe> AddIngredientAsync(int recipeId, int ingredientId)
-        {
-            var recipe = GetRecipeDecoratedWithRelations()
-                .Single(r => r.Id == recipeId);
-            recipe.Ingredients.Add(new IngredientRecipe
-            {
-                IngredientId = ingredientId, RecipeId = recipeId
-            });
-            _context.SaveChanges();
 
             return GetRecipeDecoratedWithRelations()
                 .SingleAsync(r => r.Id == recipe.Id);
@@ -55,6 +47,54 @@ namespace Core.Services
             _context.SaveChanges();
 
             return Task.FromResult(recipeToUpdate);
+        }
+
+        public Task<Recipe> RemoveAsync(int recipeId)
+        {
+            var recipe = _context.Recipes.Single(r => r.Id == recipeId);
+            _context.Recipes.Remove(recipe);
+            _context.SaveChanges();
+
+            return Task.FromResult(recipe);
+        }
+
+        public Task<Recipe> AddIngredientAsync(IngredientRecipe ingredientRecipe)
+        {
+            var recipe = GetRecipeDecoratedWithRelations()
+                .Single(r => r.Id == ingredientRecipe.RecipeId);
+            recipe.Ingredients.Add(ingredientRecipe);
+            _context.SaveChanges();
+
+            return GetRecipeDecoratedWithRelations()
+                .SingleAsync(r => r.Id == recipe.Id);
+        }
+
+        public Task<Recipe> RemoveIngredientAsync(int recipeId, int ingredientId)
+        {
+            var recipe = GetRecipeDecoratedWithRelations()
+                .Single(r => r.Id == recipeId);
+
+            var ingredient = recipe.Ingredients
+                .Single(x => x.IngredientId == ingredientId);
+
+            recipe.Ingredients.Remove(ingredient);
+            _context.SaveChanges();
+
+            return Task.FromResult(recipe);
+        }
+        
+        public Task<Recipe> UpdateIngredientQuantityAsync(IngredientRecipe ingredientRecipe)
+        {
+            var recipe = GetRecipeDecoratedWithRelations()
+                .Single(r => r.Id == ingredientRecipe.RecipeId);
+            var ingredient = recipe.Ingredients
+                .Single(x => x.IngredientId == ingredientRecipe.IngredientId);
+
+            ingredient.Quantity = ingredientRecipe.Quantity;
+            _context.SaveChanges();
+
+            return GetRecipeDecoratedWithRelations()
+                .SingleAsync(r => r.Id == recipe.Id);
         }
 
         private IIncludableQueryable<Recipe, Ingredient> GetRecipeDecoratedWithRelations()
