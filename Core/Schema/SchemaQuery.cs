@@ -1,3 +1,4 @@
+using System;
 using Core.Services;
 using GraphQL.Types;
 
@@ -15,9 +16,11 @@ namespace Core.Schema
                 resolve: context =>
                     recipeService.GetRecipeByIdAsync(context.GetArgument<int>(Name = "recipeId")));
 
-            Field<ListGraphType<MealType>>("meals", resolve: context => mealService.GetMealsAsync());
+            Field<ListGraphType<MealType>>("meals", 
+                arguments: new QueryArguments(new QueryArgument<DateGraphType> {Name = "createdAt"}),
+                resolve: context => mealService.GetMealsAsync(context.GetArgument<DateTime>("createdAt")));
 
-            Field<MealType>("mealRecipes",
+            Field<MealType>("meal",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "mealId"}),
                 resolve: context => mealService.GetRecipesForMealIdAsync(context.GetArgument<int>("mealId"))
             );

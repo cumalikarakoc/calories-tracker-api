@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Schema.Dtos;
 using DataContext.Data;
 using DataContext.Models;
 using Microsoft.EntityFrameworkCore;
@@ -18,12 +19,26 @@ namespace Core.Services
             _context = context;
         }
 
-        public Task<List<Meal>> GetMealsAsync()
+        public Task<List<MealDto>> GetMealsAsync(DateTime? createdAt)
         {
-            return _context.Meals
-                .ToListAsync();
+            if (!createdAt.HasValue)
+            {
+                return _context.Meals.Select(m => new MealDto(m))
+                    .ToListAsync();
+            }
+
+            return _context.MealRecipe
+                .Include(x => x.Recipe)
+                .Where(x => x.CreatedAt.Date == createdAt.Value.Date)
+                .GroupBy(x => x.MealId)
+                .Select(mealRecipes => new MealDto
+                {
+                    Id = mealRecipes.First().Meal.Id,
+                    Name = mealRecipes.First().Meal.Name,
+                    Recipes = mealRecipes.Select(mr => new MealRecipeDto(mr.Recipe, mr.CreatedAt)).ToList()
+                }).ToListAsync();
         }
-        
+
         public Task<Meal> GetRecipesForMealIdAsync(int mealId)
         {
             return GetMealDecoratedWithRelations()
@@ -57,7 +72,7 @@ namespace Core.Services
             var recipe = meal.Recipes.Single(x => x.RecipeId == recipeId && x.CreatedAt == createdAt);
             meal.Recipes.Remove(recipe);
             _context.SaveChanges();
-            
+
             return Task.FromResult(meal);
         }
     }
