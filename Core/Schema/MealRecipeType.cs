@@ -11,7 +11,7 @@ namespace Core.Schema
         {
             Field(r => r.Id);
             Field(r => r.Name);
-            Field<ListGraphType<IngredientRecipeType>, IEnumerable<IngredientRecipe>>()
+            Field<ListGraphType<IngredientRecipeType>, IEnumerable<IngredientRecipeDto>>()
                 .Name("ingredients")
                 .Resolve(context => context.Source.Ingredients);
             Field(x => x.CreatedAt);
