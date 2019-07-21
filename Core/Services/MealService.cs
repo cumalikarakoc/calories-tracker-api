@@ -27,18 +27,20 @@ namespace Core.Services
                     .ToListAsync();
             }
 
-            return _context.MealRecipe
-                .Include(x => x.Recipe)
+            return _context.Meals
+                .Include(x => x.Recipes)
+                .ThenInclude(x => x.Recipe)
                 .ThenInclude(x => x.Ingredients)
                 .ThenInclude(x => x.Ingredient)
-                .Where(x => x.CreatedAt.Date == createdAt.Value.Date)
-                .GroupBy(x => x.MealId)
-                .Select(mealRecipes => new MealDto
-                {
-                    Id = mealRecipes.First().Meal.Id,
-                    Name = mealRecipes.First().Meal.Name,
-                    Recipes = mealRecipes.Select(mr => new MealRecipeDto(mr.Recipe, mr.CreatedAt)).ToList()
-                }).ToListAsync();
+                .Select(m => m.Recipes.Count == 0
+                    ? new MealDto(m)
+                    : new MealDto
+                    {
+                        Id = m.Id,
+                        Name = m.Name,
+                        Recipes = m.Recipes.Where(r => r.CreatedAt.Date == createdAt.Value.Date)
+                            .Select(r => new MealRecipeDto(r.Recipe, r.CreatedAt)).ToList()
+                    }).ToListAsync();
         }
 
         public Task<MealDto> AddRecipeToMealAsync(int recipeId, int mealId)
