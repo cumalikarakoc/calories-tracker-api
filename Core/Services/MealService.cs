@@ -42,7 +42,6 @@ namespace Core.Services
                         Recipes = m.Recipes.Where(r => r.CreatedAt.Date == createdAt.Value.Date)
                             .Select(r => new MealRecipeDto(r.Recipe, r.CreatedAt)).ToList(),
                         Ingredients = m.Ingredients
-                        
                     }).ToListAsync();
         }
 
@@ -76,6 +75,24 @@ namespace Core.Services
             return _context.Meals
                 .Include(m => m.Recipes)
                 .ThenInclude(x => x.Recipe);
+        }
+
+        public Task<MealDto> CreateAsync(string name)
+        {
+            var meal = new Meal {Name = name};
+            _context.Meals.Add(meal);
+            _context.SaveChanges();
+
+            return Task.FromResult(new MealDto {Id = meal.Id, Name = meal.Name});
+        }
+
+        public Task<MealDto> RemoveAsync(int id)
+        {
+            var meal = _context.Meals.Single(m => m.Id == id);
+            _context.Meals.Remove(meal);
+            _context.SaveChanges();
+
+            return Task.FromResult(new MealDto {Id = meal.Id, Name = meal.Name});
         }
     }
 }

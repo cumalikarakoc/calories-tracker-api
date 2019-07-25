@@ -1,5 +1,6 @@
 using System;
 using Core.Schema.Data;
+using Core.Schema.Dtos;
 using Core.Services;
 using DataContext.Models;
 using GraphQL.Types;
@@ -56,11 +57,12 @@ namespace Core.Schema
                 resolve: context =>
                     recipeService.RemoveIngredientAsync(context.GetArgument<int>(Name = "recipeId"),
                         context.GetArgument<int>(Name = "ingredientId")));
-            
+
             Field<RecipeType>("updateIngredientQuantityOfRecipe", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<IngredientRecipeInputType>> {Name = "ingredientRecipe"}),
                 resolve: context =>
-                    recipeService.UpdateIngredientQuantityAsync(context.GetArgument<IngredientRecipe>(Name = "ingredientRecipe")));
+                    recipeService.UpdateIngredientQuantityAsync(
+                        context.GetArgument<IngredientRecipe>(Name = "ingredientRecipe")));
 
             Field<IngredientType>("createIngredient", arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<IngredientCreateInputType>> {Name = "ingredient"}),
@@ -78,6 +80,15 @@ namespace Core.Schema
                     new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "ingredientId"}),
                 resolve: context =>
                     ingredientService.RemoveAsync(context.GetArgument<int>(Name = "ingredientId")));
+
+            Field<MealType>("createMeal", arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<StringGraphType>> {Name = "name"}),
+                resolve: context => mealService.CreateAsync(context.GetArgument<string>(Name = "name")));
+
+            Field<MealType>("removeMeal",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "id"}),
+                resolve: context => mealService.RemoveAsync(context.GetArgument<int>(Name = "id"))
+            );
         }
     }
 }
