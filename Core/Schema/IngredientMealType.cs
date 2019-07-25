@@ -1,4 +1,3 @@
-using Core.Schema.Dtos;
 using DataContext.Models;
 using GraphQL.Types;
 
@@ -10,6 +9,7 @@ namespace Core.Schema
         {
             Field(i => i.Ingredient.Id);
             Field(i => i.Ingredient.Name);
+            Field(i => i.Ingredient.Calories);
             Field(i => i.CreatedAt);
         }
     }
