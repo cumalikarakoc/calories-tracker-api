@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Core.Schema.Dtos;
 using DataContext.Models;
 using GraphQL.Types;
@@ -15,6 +14,9 @@ namespace Core.Schema
             Field<ListGraphType<MealRecipeType>,  IEnumerable<MealRecipeDto>>()
                 .Name("recipes")
                 .Resolve(context => context.Source.Recipes);
+            Field<ListGraphType<IngredientMealType>,  IEnumerable<IngredientMeal>>()
+                .Name("ingredients")
+                .Resolve(context => context.Source.Ingredients);
         }
     }
 }

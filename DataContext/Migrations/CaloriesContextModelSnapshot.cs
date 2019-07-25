@@ -34,6 +34,21 @@ namespace DataContext.Migrations
                     b.ToTable("Ingredients");
                 });
 
+            modelBuilder.Entity("DataContext.Models.IngredientMeal", b =>
+                {
+                    b.Property<int>("IngredientId");
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<int>("MealId");
+
+                    b.HasKey("IngredientId", "CreatedAt");
+
+                    b.HasIndex("MealId");
+
+                    b.ToTable("IngredientMeal");
+                });
+
             modelBuilder.Entity("DataContext.Models.IngredientRecipe", b =>
                 {
                     b.Property<int>("IngredientId");
@@ -90,6 +105,19 @@ namespace DataContext.Migrations
                         .HasName("AK_Recipe_Name");
 
                     b.ToTable("Recipes");
+                });
+
+            modelBuilder.Entity("DataContext.Models.IngredientMeal", b =>
+                {
+                    b.HasOne("DataContext.Models.Ingredient", "Ingredient")
+                        .WithMany()
+                        .HasForeignKey("IngredientId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("DataContext.Models.Meal", "Meal")
+                        .WithMany("Meals")
+                        .HasForeignKey("MealId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("DataContext.Models.IngredientRecipe", b =>

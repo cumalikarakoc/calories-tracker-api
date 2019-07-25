@@ -45,6 +45,7 @@ namespace Web
             services.AddTransient<MealRecipeType>();
             services.AddTransient<IngredientType>();
             services.AddTransient<IngredientRecipeType>();
+            services.AddTransient<IngredientMealType>();
             
             //Input types
             services.AddTransient<RecipeCreateInputType>();

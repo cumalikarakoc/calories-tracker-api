@@ -28,6 +28,7 @@ namespace Core.Services
             }
 
             return _context.Meals
+                .Include(x => x.Ingredients)
                 .Include(x => x.Recipes)
                 .ThenInclude(x => x.Recipe)
                 .ThenInclude(x => x.Ingredients)
@@ -39,7 +40,9 @@ namespace Core.Services
                         Id = m.Id,
                         Name = m.Name,
                         Recipes = m.Recipes.Where(r => r.CreatedAt.Date == createdAt.Value.Date)
-                            .Select(r => new MealRecipeDto(r.Recipe, r.CreatedAt)).ToList()
+                            .Select(r => new MealRecipeDto(r.Recipe, r.CreatedAt)).ToList(),
+                        Ingredients = m.Ingredients
+                        
                     }).ToListAsync();
         }
 

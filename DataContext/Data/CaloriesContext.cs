@@ -37,7 +37,10 @@ namespace DataContext.Data
                 .HasKey(i => new {i.IngredientId, i.RecipeId});
 
             modelBuilder.Entity<MealRecipe>()
-                .HasKey(i => new {i.RecipeId, i.CreatedAt});
+                .HasKey(mr => new {mr.RecipeId, mr.CreatedAt});
+
+            modelBuilder.Entity<IngredientMeal>()
+                .HasKey(im => new {im.IngredientId, im.CreatedAt});
         }
     }
 }
