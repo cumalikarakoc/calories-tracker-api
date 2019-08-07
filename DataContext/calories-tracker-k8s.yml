@@ -1,0 +1,172 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: calories-tracker
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: haproxy
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+  name: calories-tracker-ingress
+  namespace: calories-tracker
+spec:
+  tls:
+    - hosts:
+        - calories-tracker-api.maartendev.me
+      secretName: letsencrypt-prod
+  rules:
+    - host: calories-tracker-api.maartendev.me
+      http:
+        paths:
+          - backend:
+              serviceName: calories-tracker-svc
+              servicePort: 80
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: calories-tracker-svc
+  namespace: calories-tracker
+  annotations:
+    prometheus.io/scrape: 'true'
+spec:
+  type: NodePort
+  selector:
+    app: calories-tracker-app
+  ports:
+    - protocol: TCP
+      port: 80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calories-tracker-app-deployment
+  namespace: calories-tracker
+  labels:
+    app: calories-tracker-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calories-tracker-app
+      tier: web
+  template:
+    metadata:
+      labels:
+        app: calories-tracker-app
+        tier: web
+    spec:
+      containers:
+        - name: calories-tracker-app
+          image: $DOCKER_IMAGE_URL:$GIT_COMMIT_SHORT
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: secrets
+              mountPath: /app/secrets
+              readOnly: true
+      volumes:
+        - name: secrets
+          secret:
+            secretName: training-app-appsettings
+
+---
+## Database
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  namespace: calories-tracker
+  name: calories-tracker-db-pv
+  labels:
+    app: calories-tracker
+    tier: persistence
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 8Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/calories-tracker-db"
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: calories-tracker-db-pv-claim
+  namespace: calories-tracker
+  labels:
+    app: calories-tracker
+spec:
+  storageClassName: "standard"
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  selector:
+    matchLabels:
+      app: calories-tracker
+      tier: persistence
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: calories-tracker-db
+  namespace: calories-tracker
+  labels:
+    app: calories-tracker
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: calories-tracker
+    tier: db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calories-tracker-db
+  namespace: calories-tracker
+  labels:
+    app: calories-tracker
+spec:
+  selector:
+    matchLabels:
+      app: calories-tracker
+      tier: db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: calories-tracker
+        tier: db
+    spec:
+      containers:
+        - image: mysql:5.6
+          name: mysql
+          env:
+            - name: MYSQL_ALLOW_EMPTY_PASSWORD
+              value: 'yes'
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: calories-tracker-db-pv-claim
+
