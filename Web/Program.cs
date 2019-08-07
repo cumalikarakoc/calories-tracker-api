@@ -19,6 +19,10 @@ namespace Web
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.AddJsonFile($"secrets/appsettings.Development.json");
+                })
                 .UseStartup<Startup>();
     }
 }
