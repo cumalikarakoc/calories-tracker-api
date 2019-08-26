@@ -10,37 +10,23 @@ namespace DataContext.Data
         }
 
         public DbSet<Meal> Meals { get; set; }
-        public DbSet<Recipe> Recipes { get; set; }
-        public DbSet<Ingredient> Ingredients { get; set; }
-        public DbSet<MealRecipe> MealRecipe { get; set; }
+        public DbSet<Consumable> Consumables { get; set; }
+        public DbSet<Consumption> Consumptions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Meal>()
                 .HasKey(m => m.Id);
 
-            modelBuilder.Entity<Recipe>()
-                .HasKey(r => r.Id);
-
-            modelBuilder.Entity<Recipe>()
-                .HasAlternateKey(r => r.Name)
-                .HasName("AK_Recipe_Name");
-
-            modelBuilder.Entity<Ingredient>()
+            modelBuilder.Entity<Consumable>()
                 .HasKey(i => i.Id);
 
-            modelBuilder.Entity<Ingredient>()
+            modelBuilder.Entity<Consumable>()
                 .HasAlternateKey(i => i.Name)
-                .HasName("AK_Ingredient_Name");
+                .HasName("AK_Consumable_Name");
 
-            modelBuilder.Entity<IngredientRecipe>()
-                .HasKey(i => new {i.IngredientId, i.RecipeId});
-
-            modelBuilder.Entity<MealRecipe>()
-                .HasKey(mr => new {mr.RecipeId, mr.CreatedAt});
-
-            modelBuilder.Entity<IngredientMeal>()
-                .HasKey(im => new {im.IngredientId, im.CreatedAt});
+            modelBuilder.Entity<Consumption>()
+                .HasKey(c => c.Id);
         }
     }
 }
