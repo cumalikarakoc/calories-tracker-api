@@ -36,28 +36,23 @@ namespace Web
 
             
             //Services
-            services.AddTransient<RecipeService>();
-            services.AddTransient<MealService>();
-            services.AddTransient<IngredientService>();
+            services.AddSingleton<ConsumptionService>();
+            services.AddSingleton<MealService>();
+            services.AddSingleton<ConsumableService>();
             
             //Types
-            services.AddTransient<RecipeType>();
             services.AddTransient<MealType>();
-            services.AddTransient<MealRecipeType>();
-            services.AddTransient<IngredientType>();
-            services.AddTransient<IngredientRecipeType>();
-            services.AddTransient<IngredientMealType>();
+            services.AddTransient<ConsumableType>();
+            services.AddTransient<ConsumptionType>();
             
             //Input types
-            services.AddTransient<RecipeCreateInputType>();
-            services.AddTransient<IngredientCreateInputType>();
-            services.AddTransient<IngredientRecipeInputType>();
+            services.AddTransient<ConsumableCreateInputType>();
+            services.AddTransient<MealCreateInputType>();
             
             // Schema setup
-            services.AddTransient<SchemaQuery>(); 
-            services.AddTransient<SchemaMutation>();
-
-            services.AddTransient<CaloriesTrackerSchema>();
+            services.AddSingleton<SchemaQuery>(); 
+            services.AddSingleton<SchemaMutation>();
+            services.AddSingleton<CaloriesTrackerSchema>();
 
 
             services.AddGraphQL(options =>

@@ -6,28 +6,19 @@ namespace Core.Schema
 {
     public class SchemaQuery : ObjectGraphType<object>
     {
-        public SchemaQuery(RecipeService recipeService, MealService mealService, IngredientService ingredientService)
+        public SchemaQuery(ConsumptionService consumptionService, ConsumableService consumableService, MealService mealService)
         {
             Name = "Query";
-            Field<ListGraphType<RecipeType>>("recipes", resolve: context => recipeService.GetRecipesAsync());
-
-            Field<RecipeType>("recipe", arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<IntGraphType>> {Name = "recipeId"}),
-                resolve: context =>
-                    recipeService.GetRecipeByIdAsync(context.GetArgument<int>(Name = "recipeId")));
-
-            Field<ListGraphType<MealType>>("meals", 
+            
+            Field<ListGraphType<ConsumptionType>>("consumptions", 
                 arguments: new QueryArguments(new QueryArgument<DateGraphType> {Name = "createdAt"}),
-                resolve: context => mealService.GetMealsAsync(context.GetArgument<DateTime>("createdAt")));
+                resolve: context => consumptionService.GetConsumptionsAsync(context.GetArgument<DateTime>("createdAt")));
 
-            Field<ListGraphType<IngredientType>>("ingredients",
-                resolve: context => ingredientService.GetIngredientsAsync());
+            Field<ListGraphType<ConsumableType>>("consumables",
+                resolve: context => consumableService.GetConsumablesAsync());
 
-            Field<IngredientType>("ingredient",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<IntGraphType>>
-                    {Name = "ingredientId"}),
-                resolve: context =>
-                    ingredientService.GetIngredientByIdAsync(context.GetArgument<int>(Name = "ingredientId")));
+            Field<ListGraphType<MealType>>("meals",
+                resolve: context => mealService.GetMealsAsync());
         }
     }
 }

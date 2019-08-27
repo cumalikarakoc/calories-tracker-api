@@ -3,11 +3,12 @@ using GraphQL.Types;
 
 namespace Core.Schema.Data
 {
-    public class RecipeCreateInputType : InputObjectGraphType<Recipe>
+    public class MealCreateInputType : InputObjectGraphType<Meal>
     {
-        public RecipeCreateInputType()
+        public MealCreateInputType()
         {
-            Name = "RecipeInput";
+            Name = "mealInput";
+
             Field<NonNullGraphType<StringGraphType>>("name");
         }
     }
