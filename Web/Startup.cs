@@ -36,9 +36,9 @@ namespace Web
 
             
             //Services
-            services.AddTransient<ConsumptionService>();
-            services.AddTransient<MealService>();
-            services.AddTransient<ConsumableService>();
+            services.AddSingleton<ConsumptionService>();
+            services.AddSingleton<MealService>();
+            services.AddSingleton<ConsumableService>();
             
             //Types
             services.AddTransient<MealType>();
@@ -50,10 +50,9 @@ namespace Web
             services.AddTransient<MealCreateInputType>();
             
             // Schema setup
-            services.AddTransient<SchemaQuery>(); 
-            services.AddTransient<SchemaMutation>();
-
-            services.AddTransient<CaloriesTrackerSchema>();
+            services.AddSingleton<SchemaQuery>(); 
+            services.AddSingleton<SchemaMutation>();
+            services.AddSingleton<CaloriesTrackerSchema>();
 
 
             services.AddGraphQL(options =>
