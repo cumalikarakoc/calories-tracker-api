@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataContext.Data;
 using DataContext.Models;
+using GraphQL;
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 
 namespace Core.Services
 {
@@ -25,7 +28,22 @@ namespace Core.Services
         public Task<Consumable> CreateAsync(Consumable consumable)
         {
             _context.Consumables.Add(consumable);
-            _context.SaveChanges();
+
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                if (!(e.InnerException is MySqlException exception)) throw;
+
+                if (exception.Number == (int) MySqlErrorCode.DuplicateKeyEntry)
+                {
+                    throw new ExecutionError(consumable.Name + " exists already in the database.");
+                }
+
+                throw;
+            }
 
             return Task.FromResult(consumable);
         }

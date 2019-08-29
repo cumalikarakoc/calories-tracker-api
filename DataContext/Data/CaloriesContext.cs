@@ -17,6 +17,10 @@ namespace DataContext.Data
         {
             modelBuilder.Entity<Meal>()
                 .HasKey(m => m.Id);
+            
+            modelBuilder.Entity<Meal>()
+                .HasAlternateKey(i => i.Name)
+                .HasName("AK_Meal_Name");
 
             modelBuilder.Entity<Consumable>()
                 .HasKey(i => i.Id);
